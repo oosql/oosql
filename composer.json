@@ -1,9 +1,9 @@
 {
-  "name": "phiber/oosql",
+  "name": "oosql/oosql",
   "type": "library",
   "description": "Object Oriented SQL is an active record style ORM",
   "keywords": ["Framework", "ORM"],
-  "homepage": "http://github.com/ghousseyn/oosql",
+  "homepage": "http://github.com/oosql/oosql",
   "license": "MIT",
   "authors": [
     {
