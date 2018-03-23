@@ -1,5 +1,5 @@
 <?php
-namespace Phiber\oosql;
+namespace oosql;
 use PDO;
 
 abstract class oogen extends PDO
@@ -177,7 +177,7 @@ abstract class oogen extends PDO
 
             print "Generating class $cname ...";
 
-            $this->text .= '<?php' . PHP_EOL . 'namespace entity;' . PHP_EOL . 'use Phiber\\entity\\entity;';
+            $this->text .= '<?php' . PHP_EOL . 'namespace entity;' . PHP_EOL . 'use oosql\entity\\entity;';
             $this->text .= PHP_EOL . "class $cname extends entity  " . PHP_EOL . "{" . PHP_EOL;
 
             $this->ai = false;

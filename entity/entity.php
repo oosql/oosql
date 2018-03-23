@@ -5,9 +5,10 @@
  * @author     Housseyn Guettaf <ghoucine@gmail.com>
  * @package    oosql
  */
-namespace Phiber\entity;
+namespace entity;
 
-use Phiber\oosql\oosql;
+use oosql\oosql;
+use oosql\collection;
 
 abstract class entity
 {
@@ -155,7 +156,7 @@ abstract class entity
 
         foreach ($relations as $fk => $target) {
             $related = $this->execRelation($tablename, $fk, $target, $args);
-            if ($related instanceof entity || $related instanceof \Phiber\oosql\collection) {
+            if ($related instanceof entity || $related instanceof collection) {
                 return $related;
             }
         }
@@ -165,7 +166,7 @@ abstract class entity
         foreach ($relations as $localKey => $related) {
             foreach ($related as $relStr) {
                 $related = $this->execRelation($tablename, $localKey, $relStr, $args);
-                if ($related instanceof entity || $related instanceof \Phiber\oosql\collection) {
+                if ($related instanceof entity || $related instanceof collection) {
                     return $related;
                 }
             }
@@ -177,7 +178,7 @@ abstract class entity
         foreach ($relations as $localKey => $related) {
             foreach ($related as $relStr) {
                 $related = $this->execRelation($tablename, $localKey, $relStr, $args);
-                if ($related instanceof entity || $related instanceof \Phiber\oosql\collection) {
+                if ($related instanceof entity || $related instanceof collection) {
                     return $related;
                 }
             }
@@ -188,7 +189,7 @@ abstract class entity
 
         foreach ($relations as $table => $relatedTbls) {
             if (in_array($tablename, $relatedTbls)) {
-                $collection = new \Phiber\oosql\collection();
+                $collection = new collection();
                 if (!empty($args)) {
                     $objCollection = $this->{$table}()->load();
                     if (!$objCollection->isEmpty()) {

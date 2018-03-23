@@ -1,6 +1,6 @@
 <?php
-namespace Phiber\oosql\driver;
-use Phiber\oosql\oogen;
+namespace oosql\driver;
+use oosql\oogen;
 
 class mysql extends oogen
 {

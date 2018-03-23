@@ -6,10 +6,10 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Phiber\\entity\\entity' => $baseDir . '/entity/entity.php',
-    'Phiber\\oosql\\collection' => $baseDir . '/collection.php',
-    'Phiber\\oosql\\oogen' => $baseDir . '/oogen.php',
-    'Phiber\\oosql\\oosql' => $baseDir . '/oosql.php',
-    'Phiber\\oosql\\vendor\\mysql' => $vendorDir . '/mysql.php',
-    'Phiber\\oosql\\vendor\\pgsql' => $vendorDir . '/pgsql.php',
+    'oosql\entity\\entity' => $baseDir . '/entity/entity.php',
+    'oosql\oosql\\collection' => $baseDir . '/collection.php',
+    'oosql\oosql\\oogen' => $baseDir . '/oogen.php',
+    'oosql\oosql\\oosql' => $baseDir . '/oosql.php',
+    'oosql\oosql\\vendor\\mysql' => $vendorDir . '/mysql.php',
+    'oosql\oosql\\vendor\\pgsql' => $vendorDir . '/pgsql.php',
 );

@@ -3,7 +3,7 @@
  * Thanks to Aaron Ficher
  * http://www.aaron-fisher.com/articles/web/php/object-collections-in-php/
  */
-namespace Phiber\oosql;
+namespace oosql;
 
 class collection extends \ArrayObject
 {
