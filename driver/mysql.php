@@ -162,6 +162,10 @@ class mysql extends oogen
                 $ks[] = (array)$ex;
             }
 
+            /** probably a view */
+            if (empty($ks[0]['Create Table'])) {
+                continue;
+            }
             $create = $ks[0]['Create Table'];
 
             $keys = explode(',', $create);
