@@ -24,12 +24,14 @@ abstract class entity
             static::$oosql_obj = $oosql;
         }
 
+        $this->getTableName();
     }
 
     public function getTableName()
     {
         $parts = explode('\\', get_called_class());
-        return array_pop($parts);
+        self::$tablename = array_pop($parts);
+        return self::$tablename;
     }
 
     /*
@@ -38,7 +40,7 @@ abstract class entity
      */
     public static function getInstance()
     {
-        return self::getooSQL(get_class(new static));
+        return self::getooSQL(get_called_class());
     }
 
     protected static function getooSQL($class)
@@ -47,12 +49,10 @@ abstract class entity
         if (self::$oosql_obj) {
             return self::$oosql_obj;
         }
-        self::$tablename = strstr($class, '\\');
         if (self::$tablename === false) {
             return false;
         }
 
-        self::$tablename = trim(str_replace('\\', '', self::$tablename));
         return self::$oosql_obj = oosql::getInstance(self::$tablename, $class);
     }
 
@@ -63,7 +63,7 @@ abstract class entity
         self::getooSQL(get_class(new static))->setTable($this->getTableName());
         if (self::$oosql_model_extra) {
 
-            $originalProps = get_object_vars($this);
+            $originalProps = get_object_vars(new static);
 
             $mixedProps = array_keys(get_object_vars($this));
 
@@ -134,7 +134,7 @@ abstract class entity
     public function load()
     {
 
-        return $this->find();
+        return $this->find(func_get_args());
 
     }
 
@@ -191,32 +191,20 @@ abstract class entity
         foreach ($relations as $table => $relatedTbls) {
             if (in_array($tablename, $relatedTbls)) {
                 $collection = new collection();
-                if (!empty($args)) {
-                    $objCollection = $this->{$table}()->load();
-                    if (!$objCollection->isEmpty()) {
-                        foreach ($objCollection as $record) {
-                            $Recs[] = $record->{$tablename}()->load()->toArray();
+
+                $objCollection = $this->{$table}()->findAll();
+                if (!$objCollection->isEmpty()) {
+
+                    foreach ($objCollection as $res) {
+                        $results = $res->{$tablename}()->findAll()->toArray();
+                        if (empty($collection->obj_name)) {
+                            $collection->obj_name = get_class($results[0]);
                         }
-                        $flattened = array();
-                        array_walk_recursive($Recs, function ($a) use (&$flattened) {
-                            $flattened[] = $a;
-                        });
-                        $collection->addBulk($flattened);
+                        $collection->addBulk($results);
                     }
-                } else {
-                    $objCollection = $this->{$table}()->load();
-                    if (!$objCollection->isEmpty()) {
 
-                        foreach ($objCollection as $res) {
-                            $objects[] = $res->{$tablename}();
-                        }
-
-                        $flattened = array();
-                        array_walk_recursive($objects, function($a) use (&$flattened) { $flattened[] = $a; });
-                        $collection->addBulk($flattened);
-
-                    }
                 }
+
                 return $collection;
             }
         }
@@ -232,8 +220,9 @@ abstract class entity
             if (null == $this->{$key}) {
                 throw new \Exception('The relation key "' . $key . '" is null!');
             }
-            $tablename = "entity\\$tablename";
-            $instance = new $tablename;
+            $entity = "entity\\$tablename";
+            $instance = new $entity;
+            $instance::$oosql_obj = oosql::getInstance($tablename, $entity);
             $instance->{$objPath[1]} = $this->{$key};
             if ($args) {
                 return $instance->load();
@@ -252,8 +241,8 @@ abstract class entity
 
     private function callFunc($fn, $args)
     {
-        $class = get_class($this);
-        return call_user_func_array(array(self::getoosql($class), $fn), $args);
+        $class = get_called_class();
+        return call_user_func_array(array(self::getoosql($class)->reset(), $fn), $args);
     }
 
     public function select()
@@ -386,3 +375,5 @@ abstract class entity
         return $obj->getConstants();
     }
 }
+
+?>
