@@ -213,7 +213,7 @@ abstract class oogen extends PDO
             print " Done" . PHP_EOL;
             $h++;
         }
-        print "Generated " . $h . " classes in " . number_format((microtime(true) - $this->time), 4) . " ms | Memory: " . number_format((memory_get_usage() - $this->mem) / 1024, 4) . "kb";
+        print "Generated " . $h . " classes in " . number_format((microtime(true) - $this->time), 4) . " ms | Memory: " . number_format((memory_get_usage() - $this->mem) / 1024, 4) . "kb" . PHP_EOL;
     }
 
     public static function transcribe(array $array)

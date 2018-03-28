@@ -1,7 +1,7 @@
 <?php
 namespace oosql;
 
-use entity\entity;
+use oosql\entity\entity;
 
 class oosql extends \PDO
 {
@@ -192,18 +192,17 @@ class oosql extends \PDO
      * constructor
      * @param string $oosql_table The table we are querying
      * @param string $oosql_class The class name (type of the object holding the results)
-     * @param \oosqlconfig $config
+     * @param config $config
      * @throws \Exception
      */
-    public function __construct($oosql_table = null, $oosql_class = null, $config = null, $options = null)
+    public function __construct($oosql_table = null, $oosql_class = null, config $config = null, $options = null)
     {
 
         if ($oosql_class === null || $oosql_table === null) {
             throw new \Exception('Class or Table name not provided!', 9805, null);
         }
-        if (!$config instanceof config && is_array($config)) {
-            $configArray = array_values($config);
-            $config = new config($configArray);
+        if (!$config instanceof config) {
+            $config = new config();
         }
         $this->oosql_class = $oosql_class;
         $this->oosql_table = $oosql_table;
@@ -1209,7 +1208,8 @@ class oosql extends \PDO
      */
     public function findOne($arg = null, $operator = '=', $fields = array('*'))
     {
-        return $this->find($arg, $operator, $fields)->limit(0, 1);
+        $result = $this->find($arg, $operator, $fields)->limit(0, 1)->all();
+        return $result ? $result->object() : null;
     }
 
     /**
@@ -1235,6 +1235,7 @@ class oosql extends \PDO
      */
     public function find($arg = null, $operator = '=', $fields = array('*'))
     {
+
         if ($fields[0] == '*') {
             $this->select();
         } else {
@@ -1269,7 +1270,6 @@ class oosql extends \PDO
                 $i++;
             }
         }
-
 
 
         return $this;

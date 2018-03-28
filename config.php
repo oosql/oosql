@@ -2,7 +2,8 @@
 
 
 namespace oosql;
-
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 class config
 {
@@ -14,7 +15,7 @@ class config
 
     protected $DB_DSN, $DB_USER, $DB_PASS;
 
-    public function __construct(array $config = null)
+    public function __construct(array $config = null, $confFile = null)
     {
         if ($config) {
             if (empty($config[0]) || empty($config[1]) || empty($config[2])) {
@@ -24,8 +25,18 @@ class config
             $this->setDBUSER($config[1]);
             $this->setDBPASS($config[2]);
         }
-    }
+        $this->loadConfiguration($confFile);
 
+    }
+    public function loadConfiguration($yml = null)
+    {
+        $yml = $yml ?: getenv('OOSQL_CONFIG_YAML');
+        if (!$yml || !file_exists($yml)) {
+            throw new ParseException('No configuration file provided!');
+        }
+        $value = Yaml::parse($yml);
+        print_r($value);
+    }
     /**
      * @return mixed
      */

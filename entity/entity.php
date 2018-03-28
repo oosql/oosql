@@ -5,7 +5,7 @@
  * @author     Housseyn Guettaf <ghoucine@gmail.com>
  * @package    oosql
  */
-namespace entity;
+namespace oosql\entity;
 
 use oosql\oosql;
 use oosql\collection;
@@ -22,8 +22,6 @@ abstract class entity
     {
         if (null !== $oosql) {
             static::$oosql_obj = $oosql;
-        } else {
-            static::$oosql_obj = static::getooSQL(get_class($this));
         }
 
     }
@@ -46,6 +44,9 @@ abstract class entity
     protected static function getooSQL($class)
     {
 
+        if (self::$oosql_obj) {
+            return self::$oosql_obj;
+        }
         self::$tablename = strstr($class, '\\');
         if (self::$tablename === false) {
             return false;
@@ -59,7 +60,7 @@ abstract class entity
     {
 
         $instances = array();
-        self::$oosql_obj->setTable($this->getTableName());
+        self::getooSQL(get_class(new static))->setTable($this->getTableName());
         if (self::$oosql_model_extra) {
 
             $originalProps = get_object_vars($this);
@@ -126,14 +127,14 @@ abstract class entity
             }
 
         } else {
-            return self::$oosql_obj->reset()->save($this);
+            return self::getooSQL(get_class(new static))->reset()->save($this);
         }
     }
 
     public function load()
     {
 
-            return $this->find();
+        return $this->find();
 
     }
 
@@ -270,12 +271,13 @@ abstract class entity
         return $this->callFunc('update', func_get_args());
     }
 
-    public function find()
+    protected function find()
     {
         $args = func_get_args();
         $filter = null;
         if(!$args){
-            foreach (get_object_vars($this) as $property => $val) {
+            $vars = get_object_vars($this);
+            foreach ($vars as $property => $val) {
                 if (null !== $val) {
                     $filter[$property] = $val;
                 }
@@ -285,13 +287,17 @@ abstract class entity
 
         return $this->callFunc('find', $args);
     }
+    public function findAll()
+    {
+        return call_user_func_array([$this, 'find'], func_get_args())->all();
+    }
     public function findOne()
     {
-        return $this->callFunc('findOne', func_get_args())->all();
+        return call_user_func_array([$this, 'find'], func_get_args())->limit(0, 1)->all()->object();
     }
     public function findLimited()
     {
-        return $this->callFunc('findLimited', func_get_args())->all();
+        return call_user_func_array([$this->find(), 'limit'], func_get_args())->all();
     }
     public function delete()
     {
@@ -380,5 +386,3 @@ abstract class entity
         return $obj->getConstants();
     }
 }
-
-?>
