@@ -10,7 +10,7 @@ class mysql extends oogen
         'columns' => 'SHOW COLUMNS FROM',
         'create' => 'show create table',
         'meta' => 'SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = "<tbl_name>" AND TABLE_SCHEMA = "<db_name>";',
-        );
+    );
 
 
     protected function getMeta($table)
@@ -65,7 +65,11 @@ class mysql extends oogen
 
     protected function getManyToMany()
     {
+
         foreach ($this->belongsTo as $table => $refTables) {
+            if ($table == 'epod_po') {
+                echo '';
+            }
             if (count($refTables) > 1) {// If it belongs to more than one table those tables are related through this one
                 foreach ($refTables as $tbl) {
                     $relatedTables = array_diff($refTables, array($tbl));
@@ -85,7 +89,12 @@ class mysql extends oogen
                     }
                     $relatedTables = (null !== $relatedTables)?array_values($relatedTables):array();
                     if (count($relatedTables)) {
-                        $this->manyThrough[$tbl] = array($table => $relatedTables);
+                        foreach ($relatedTables as $relatedTable) {
+                            if (!in_array($relatedTable, $this->manyThrough[$tbl][$table])) {
+                                $this->manyThrough[$tbl][$table][] = $relatedTable;
+                            }
+                        }
+
                     }
                 }
             }
